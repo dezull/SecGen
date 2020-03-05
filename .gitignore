@@ -17,3 +17,11 @@ modules/encoders/compression/huffman/tmp
 modules/**/Gemfile.lock
 modules/generators/network/pcap/files/packet.pcap
 lib/resources/images/scenario
+
+.generated
+.ruby-version
+modules/bases/windows_server_2008_r2_amd64/Autounattend.xml
+modules/bases/windows_server_2008_r2_amd64/Packerfile
+modules/bases/windows_server_2008_r2_amd64/debug.log
+modules/bases/windows_server_2008_r2_amd64/packer_cache/
+modules/generators/image/random_jpg/secgen_local/tmp.jpg
