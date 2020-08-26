@@ -68,7 +68,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 <%=
 "	esxi.esxi_hostname = '#{@options[:esxi_url]}'
 	esxi.esxi_username = '#{@options[:esxiuser]}'
-        esxi.esxi_password = '#{@options[:esxipass]}' "
+        esxi.esxi_password = '#{@options[:esxipass]}'
+        esxi.destroy_unused_networks = true "
 		%>
 
 <%= if @options.has_key? :esxidatastore
