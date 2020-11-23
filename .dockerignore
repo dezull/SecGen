@@ -1,0 +1,8 @@
+.generated
+.git
+**/*.swp
+**/*.iso
+**/*.iso.lock
+documentation
+projects/*
+README*
