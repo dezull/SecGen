@@ -1,3 +1,7 @@
+# NOTE
+# You need to download https://my.vmware.com/group/vmware/downloads/get-download?downloadGroup=OVFTOOL440
+# and place ovftool.bundle inside secgen directory
+
 FROM ruby:2.5.4
 
 RUN apt update -y && apt upgrade -y
@@ -12,14 +16,14 @@ RUN wget "https://releases.hashicorp.com/vagrant/2.2.10/vagrant_2.2.10_x86_64.de
     dpkg -i vagrant_2.2.10_x86_64.deb && \
     rm -rf vagrant_2.2.10_x86_64.deb
 
-# TODO for windows + packer
+# Requirements for building base images for Windows
 RUN vagrant plugin install winrm && vagrant plugin install winrm-fs
 RUN wget "https://releases.hashicorp.com/packer/1.6.4/packer_1.6.4_linux_amd64.zip" && \
     unzip packer_1.6.4_linux_amd64.zip && \
     mv packer /usr/local/bin/packer && \
     rm packer_1.6.4_linux_amd64.zip
 
-# VMWare ESXi
+# VMWare ESXi plugin
 RUN git clone https://github.com/dezull/vagrant-vmware-esxi.git && \
     cd vagrant-vmware-esxi && \
     gem build vagrant-vmware-esxi.gemspec && \
@@ -27,7 +31,6 @@ RUN git clone https://github.com/dezull/vagrant-vmware-esxi.git && \
     cd .. && \
     rm -rf vagrant-vmware-esxi
 
-# TODO ovftool
 COPY ovftool.bundle .
 RUN chmod +x ovftool.bundle && \
     ./ovftool.bundle --eulas-agreed && \
