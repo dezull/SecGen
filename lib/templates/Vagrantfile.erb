@@ -19,7 +19,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         @base_type = selected_module.attributes['type']
         @ovirt_template = selected_module.attributes['ovirt_template']
         @esxi_url = selected_module.attributes['esxi_url']
-        @esxi_clone_vm = selected_module.module_path_name
+
+        if selected_module.attributes['platform'].first.downcase != 'windows'
+          @esxi_clone_vm = selected_module.module_path_name
+        end
         @cpu_word_size = selected_module.attributes['cpu_word_size'].first.downcase
         if (@options.has_key? :ovirtuser) && (@options.has_key? :ovirtpass)
           @ovirt_base_template = selected_module.attributes['ovirt_template']&.first
@@ -70,9 +73,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 "	esxi.esxi_hostname = '#{@options[:esxi_url]}'
 	esxi.esxi_username = '#{@options[:esxiuser]}'
         esxi.esxi_password = '#{@options[:esxipass]}'
-        esxi.clone_from_vm = '#{@esxi_clone_vm}'
         esxi.destroy_unused_networks = true "
 		%>
+
+<%= if @options[:esxiclonevm]
+   "     esxi.clone_from_vm = '#{@esxi_clone_vm}'"
+   end -%>
 
 <%= if @options.has_key? :esxidatastore
    "     esxi.esxi_disk_store = '#{@options[:esxidatastore]}'"
@@ -153,8 +159,13 @@ end
       <%= system.name %>.vm.box_url = 'https://github.com/myoung34/vagrant-ovirt4/blob/master/example_box/dummy.box?raw=true'
     <% elsif (@options.has_key? :esxiuser) && (@options.has_key? :esxipass) %>
     <%= system.name %>.vm.hostname = '<%= "#{prefix}#{system.name}".tr('_', '-') %>'
-    <%= system.name %>.vm.box = "esxi_clone/dummy"
-    <%= system.name %>.vm.synced_folder ".", "/vagrant", type: "rsync"
+      <% if selected_module.attributes['platform'].first.downcase == 'windows' %>
+        <%= system.name %>.vm.box = "<%= selected_module.module_path_name %>"
+        <%= system.name %>.vm.box_url = "<%= selected_module.attributes['esxi_url'].first %>"
+      <% else %>
+        <%= system.name %>.vm.box = "esxi_clone/dummy"
+      <% end %>
+      <%= system.name %>.vm.synced_folder ".", "/vagrant", type: "rsync"
     <% else %>
     <%= system.name %>.vm.box = "<%= selected_module.module_path_name %>"
     <%= system.name %>.vm.box_url = "<%= selected_module.attributes['url'].first %>"

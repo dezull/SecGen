@@ -25,10 +25,10 @@ RUN wget "https://releases.hashicorp.com/vagrant/2.2.10/vagrant_2.2.10_x86_64.de
 
 # Requirements for building base images for Windows
 RUN vagrant plugin install winrm && vagrant plugin install winrm-fs
-RUN wget "https://releases.hashicorp.com/packer/1.6.4/packer_1.6.4_linux_amd64.zip" && \
-    unzip packer_1.6.4_linux_amd64.zip && \
+RUN wget "https://releases.hashicorp.com/packer/1.5.1/packer_1.5.1_linux_amd64.zip" && \
+    unzip packer_1.5.1_linux_amd64.zip && \
     mv packer /usr/local/bin/packer && \
-    rm packer_1.6.4_linux_amd64.zip
+    rm packer_1.5.1_linux_amd64.zip
 
 # VMWare ESXi plugin
 RUN git clone https://github.com/dezull/vagrant-vmware-esxi.git && \

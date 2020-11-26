@@ -57,6 +57,7 @@ def usage
    --esxi-datastore [esxi_datastore]
    --esxi-disktype [esxi_disktype]
    --esxi-network [esxi_network_name]
+   --esxi-clone-vm: Clone existing VM instead of download/build using packer
 
    COMMANDS:
    run, r: Builds project and then builds the VMs
@@ -449,6 +450,7 @@ opts = GetoptLong.new(
     ['--esxi-url', GetoptLong::REQUIRED_ARGUMENT],
     ['--esxi-datastore', GetoptLong::REQUIRED_ARGUMENT],
     ['--esxi-network', GetoptLong::REQUIRED_ARGUMENT],
+    ['--esxi-clone-vm', GetoptLong::NO_ARGUMENT],
 )
 
 scenario = SCENARIO_XML
@@ -561,6 +563,9 @@ opts.each do |opt, arg|
   when '--esxi-disktype'
     Print.info "ESXi disk type : #{arg}"
     options[:esxidisktype] = arg
+  when '--esxi-clone-vm'
+    Print.info "Clone existing VM(s)"
+    options[:esxiclonevm] = true
   when '--no-tests'
     Print.info "Not running post-provision tests"
     options[:notests] = true
