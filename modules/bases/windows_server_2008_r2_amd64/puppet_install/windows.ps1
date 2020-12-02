@@ -25,6 +25,23 @@ param(
   ,[string]$PuppetVersion = $null
 )
 
+$ErrorActionPreference = "Stop";
+
+# Puppet download requires trusted root certificates update
+$rootCertsUpdateUrl = "https://download.microsoft.com/download/E/1/7/E1741061-14D6-417C-8D24-2CC83B67D342/Windows6.1-KB3004394-v2-x64.msu"
+$webClient = New-Object System.Net.WebClient
+$webClient.DownloadFile($rootCertsUpdateUrl, "C:\Windows\Temp\KB3004394.msu")
+$install_args = @("C:\Windows\Temp\KB3004394.msu", "/quiet", "/norestart")
+Write-Host "Updating trusted root certificates."
+$process = Start-Process -FilePath wusa.exe -ArgumentList $install_args -Wait -PassThru
+if ($process.ExitCode -ne 0) {
+  Write-Host "Failed to updated trusted root certificates, continue anyway (exit code: $($process.ExitCode))."
+}
+
+# Previous lines will try to update the certificates after restart,
+# so we need to trust the certificate for now (or in case of failure) to proceed with puppet download
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+
 if ($PuppetVersion) {
   $MsiUrl = "https://downloads.puppetlabs.com/windows/puppet-$($PuppetVersion).msi"
   Write-Host "Puppet version $PuppetVersion specified, updated MsiUrl to `"$MsiUrl`""
@@ -32,7 +49,6 @@ if ($PuppetVersion) {
 
 $PuppetInstalled = $false
 try {
-  $ErrorActionPreference = "Stop";
   Get-Command puppet | Out-Null
   $PuppetInstalled = $true
   $PuppetVersion=&puppet "--version"
@@ -49,12 +65,15 @@ if (!($PuppetInstalled)) {
     Exit 1
   }
 
-  # Install it - msiexec will download from the url
-  $install_args = @("/i", $MsiUrl,"/qn", "/norestart")
+  Write-Host "Downloading Puppet from $MsiUrl"
+  $MsiPath = "C:\Windows\Temp\puppet.msi"
+  $webClient.DownloadFile($MsiUrl, $MsiPath)
+
+  $install_args = @("/i", $MsiPath, "/qn", "/norestart")
   Write-Host "Installing Puppet. Running msiexec.exe $install_args"
   $process = Start-Process -FilePath msiexec.exe -ArgumentList $install_args -Wait -PassThru
   if ($process.ExitCode -ne 0) {
-    Write-Host "Installer failed."
+    Write-Host "Installer failed (exit code: $($process.ExitCode))."
     Exit 1
   }
 
