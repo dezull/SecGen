@@ -75,7 +75,7 @@ class ProjectFilesCreator
       end
       system.module_selections.each do |selected_module|
 
-        if selected_module.module_type == 'base'
+        if selected_module.module_type == 'base' && !@options[:esxiclonevm]
           url = @builder_type == :vmware_iso ? selected_module.attributes['esxi_url'].first : selected_module.attributes['url'].first
 
           unless url.nil? || url =~ /^http*/
