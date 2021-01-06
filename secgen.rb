@@ -32,6 +32,7 @@ def usage
    --system, -y [system_name]: Only build this system_name from the scenario
    --snapshot: Creates a snapshot of VMs once built
    --no-tests: Prevent post-provisioning tests from running.
+   --puppet-forge-url [url]: Puppet Forge URL, defaults to https://forgeapi.puppetlabs.com
 
    VIRTUALBOX OPTIONS:
    --gui-output, -g: Show the running VM (not headless)
@@ -444,6 +445,7 @@ opts = GetoptLong.new(
     ['--ovirt-affinity-group', GetoptLong::REQUIRED_ARGUMENT],
     ['--snapshot', GetoptLong::NO_ARGUMENT],
     ['--no-tests', GetoptLong::NO_ARGUMENT],
+    ['--puppet-forge-url', GetoptLong::REQUIRED_ARGUMENT],
     ['--esxiuser', GetoptLong::REQUIRED_ARGUMENT],
     ['--esxipass', GetoptLong::REQUIRED_ARGUMENT],
     ['--esxi-url', GetoptLong::REQUIRED_ARGUMENT],
@@ -564,6 +566,9 @@ opts.each do |opt, arg|
   when '--no-tests'
     Print.info "Not running post-provision tests"
     options[:notests] = true
+  when '--puppet-forge-url'
+    Print.info "Puppet Forge URL : #{arg}"
+    options[:puppet_forge_url] = arg
   else
     Print.err "Argument not valid: #{arg}"
     usage
