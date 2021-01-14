@@ -32,6 +32,7 @@ class ProjectFilesCreator
     @options = options
     @scenario_networks = Hash.new { |h, k| h[k] = 1 }
     @option_range_map = {}
+    @puppet_forge_url = @options[:puppet_forge_url] || "https://forgeapi.puppetlabs.com"
 
     # Packer builder type
     @builder_type = @options.has_key?(:esxi_url) ? :vmware_iso : :virtualbox_iso
