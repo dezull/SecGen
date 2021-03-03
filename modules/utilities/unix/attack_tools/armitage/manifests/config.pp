@@ -7,6 +7,7 @@ class armitage::config{
   # initialise the msf database, so that armitage can start it msfrpc on command
   exec { 'msfdb reinit':
     path    => ['/usr/bin', '/usr/sbin',],
+    environment    => ['HOME=/root',],
     logoutput    => true,
     provider => shell,
     tries => 4,
